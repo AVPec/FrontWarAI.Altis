@@ -1,0 +1,375 @@
+
+	//////////////////// SPAWN GROUPS ////////////////////
+
+	switch "squads" do /////"_groups"
+	{
+		case "fireTeams": 
+		{
+			if (_availablePoints > 30) then 
+			{
+				_selectedPositions = call _selectPositions;
+				if (count _selectedPositions > 1) then	
+				{
+					_selectedPositions params ["_attckPos","_spawnPos"];
+					for "_i" from 1 to 3 do
+					{
+						if (_availablePoints < 25) exitWith {};
+						_grpSize = (floor (random 4)) + 2;
+						_grp = createGroup _side;
+						_spawnPosGroup = [0,0];
+						for "_i" from 1 to 6 do 
+						{	
+							_dist = random 600;
+							_dir = random 360;
+							_spawnPosGroup = [(_spawnPos#0 + (_dist * sin _dir)),(_spawnPos#1 + (_dist * cos _dir)),0];
+							if !(surfaceIsWater _spawnPosGroup) exitWith {};
+						};
+						for "_i" from 1 to _grpSize do 
+						{	
+							_unit = _grp createUnit [(selectRandom _untType), _spawnPosGroup, [], 20, "CAN_COLLIDE"];
+						};
+						for "_i" from 1 to 2 do
+						{ 
+							_wp = _grp addWaypoint [_attckPos, 500]; 
+							_wp setWaypointType "SAD";
+						}; 
+						[_grp, 0] setWaypointPosition [_attckPos, 500]; 
+						_wp = _grp addWaypoint [_attckPos, 0]; 
+						_wp setWaypointType "CYCLE";						
+						_availablePoints = _availablePoints - (_grpSize * 5);
+						_fireteams pushBack _grp;
+					};
+					missionNamespace setVariable [_strPoints, _availablePoints];
+					_groups = ["fireTeams","squads","platoons"] selectRandomWeighted [50,25,50];
+				}
+			}
+		};
+		case "squads": 
+		{
+			if (_availablePoints > 74) then 
+			{
+				_selectedPositions = call _selectPositions;
+				if (count _selectedPositions > 1) then	
+				{
+					_selectedPositions params ["_attckPos","_spawnPos"];
+					_vehicleOptions = [[[],["I_MRAP_03_F","I_MRAP_03_F"]],[["I_MRAP_03_hmg_F"],["I_G_Offroad_01_F"]],[["I_APC_Wheeled_03_cannon_F","I_MRAP_03_hmg_F"],[]]]
+					_selectedVehicles = selectRandom _vehicleOptions;
+					_arrSquadVeh = [];
+					{
+						_veh = createVehicle [_x,_spawnPos,[],100];
+						_arrSquadVeh pushBack _veh
+					} forEach (_selectedVehicles#0 + _selectedVehicles#1);
+					_numOfunits = 0;
+					{
+						 _veh = _x;
+						_numOfunits = _numOfunits + ({(_x#1 == "cargo") || (_x#1 == "turret")} count (fullCrew [_veh, "", true]))
+					} forEach _arrSquadVeh;
+					
+					_CrewGrp = createGroup west;
+					_attackHeli = createVehicle [_attackHeliType,_RespawnPos,[],100,"fly"];
+					_attackHeli setDir (_attackHeli getRelDir _mPos);
+					_unit = _CrewGrp createUnit ["B_helipilot_F", _RespawnPos, [], 0, "CAN_COLLIDE"];
+					_unit assignAsDriver _attackHeli;
+					_unit moveInDriver _attackHeli;
+					_unit = _CrewGrp createUnit ["B_helipilot_F", _RespawnPos, [], 0, "CAN_COLLIDE"];
+					_unit assignAsGunner _attackHeli;
+					_unit moveInTurret [_attackHeli,[0]];					
+
+
+					_створити техніку з десантом = 
+					{
+					params ["_vehType","_spawnPos"];
+
+						_veh = createVehicle [_x,_spawnPos,[],100];
+						_numOfunits = count (fullCrew [_veh, "", true]);
+						_numOfunits = floor (_numOfunits *.8 + random (_numOfunits * .2));
+						_grpSize = _numOfunits;
+						_grp = createGroup _side;
+						_spawnPosGroup = [0,0];
+						for "_i" from 1 to 6 do 
+						{	
+							_dist = random 600;
+							_dir = random 360;
+							_spawnPosGroup = [(_spawnPos#0 + (_dist * sin _dir)),(_spawnPos#1 + (_dist * cos _dir)),0];
+							if !(surfaceIsWater _spawnPosGroup) exitWith {};
+						};
+						for "_i" from 1 to _grpSize do 
+						{	
+							_unit = _grp createUnit [(selectRandom _untType), _spawnPosGroup, [], 20, "CAN_COLLIDE"];
+						};
+						for "_i" from 1 to 2 do
+						{ 
+							_wp = _grp addWaypoint [_attckPos, 500]; 
+							_wp setWaypointType "SAD";
+						}; 
+						[_grp, 0] setWaypointPosition [_attckPos, 500]; 
+						_wp = _grp addWaypoint [_attckPos, 0]; 
+						_wp setWaypointType "CYCLE";						
+						_availablePoints = _availablePoints - (_grpSize * 5);
+						_fireteams pushBack _grp;
+
+					}
+					
+					
+[техніка],[екіпаж],[[десантна группа],[десантна группа],[десантна группа]]
+[техніка],[[десантна группа],[десантна группа],[десантна группа]]
+
+
+[
+	[<NULL-object>,"driver",-1,[],false,<NULL-object>,"$STR_POSITION_DRIVER"],
+	[<NULL-object>,"cargo",0,[],false,<NULL-object>,"$STR_GETIN_POS_PASSENGER"],
+	[<NULL-object>,"turret",1,[0],true,<NULL-object>,"$STR_A3_TURRETS_CARGOTURRET_R2"],
+	[<NULL-object>,"turret",2,[1],true,<NULL-object>,"$STR_A3_TURRETS_CARGOTURRET_L2"],
+	[<NULL-object>,"turret",3,[2],true,<NULL-object>,"$STR_A3_TURRETS_CARGOTURRET_R1"],
+	[<NULL-object>,"turret",4,[3],true,<NULL-object>,"$STR_A3_TURRETS_CARGOTURRET_L1"]
+]
+
+
+
+fullCrew [heli, "", true]
+
+
+
+					_squads pushBack _squadGroups;
+					missionNamespace setVariable [_strPoints, _availablePoints];
+					_groups = ["fireTeams","squads","platoons"] selectRandomWeighted [50,25,50];
+				}
+			}
+		};
+		case "platoons": 
+		{
+			if (_availablePoints > 174) then 
+			{
+				_selectedPositions = call _selectPositions;
+				if (count _selectedPositions > 1) then	
+				{
+					_selectedPositions params ["_attckPos","_spawnPos"];
+					_platoonGroups = [];
+					for "_i" from 1 to 10 do
+					{
+						if (_availablePoints < 25) exitWith {};
+						_grpSize = (floor (random 4)) + 2;
+						_grp = createGroup _side;
+						_spawnPosGroup = [0,0];
+						for "_i" from 1 to 6 do 
+						{	
+							_dist = random 600;
+							_dir = random 360;
+							_spawnPosGroup = [(_spawnPos#0 + (_dist * sin _dir)),(_spawnPos#1 + (_dist * cos _dir)),0];
+							if !(surfaceIsWater _spawnPosGroup) exitWith {};
+						};
+						for "_i" from 1 to _grpSize do 
+						{	
+							_unit = _grp createUnit [(selectRandom _untType), _spawnPosGroup, [], 20, "CAN_COLLIDE"];
+						};
+						for "_i" from 1 to 2 do
+						{ 
+							_wp = _grp addWaypoint [_attckPos, 500]; 
+							_wp setWaypointType "SAD";
+						}; 
+						[_grp, 0] setWaypointPosition [_attckPos, 500]; 
+						_wp = _grp addWaypoint [_attckPos, 0]; 
+						_wp setWaypointType "CYCLE";						
+						_platoonGroups pushBack _grp;
+						_availablePoints = _availablePoints - (_grpSize * 5);
+					};
+					_platoons pushBack _platoonGroups;
+					missionNamespace setVariable [_strPoints, _availablePoints];
+					_groups = ["fireTeams","squads","platoons"] selectRandomWeighted [50,25,50];
+				}
+			}
+		};
+	};
+
+	//////////////////// CHECK GROUPS WAYPOINTS ////////////////////
+	_numFrontPos = count _frontPositions;
+	//////////////////// MOVEMENT FOR FIRE TEAMS ////////////////////
+	{
+		_group = _x;
+		_curWp = currentWaypoint _group;
+		_wPos = waypointPosition [_group, _curWp];
+
+		_bool = true;
+		for [{_i = 0}, {_i < _numFrontPos}, {_i = _i + 1}] do 
+		{
+			if ((_wPos distance2D _frontPositions#_i) < 500) then
+			{_bool = false}
+		};
+
+
+		if (_bool) then 
+		{
+			_xStr = str (floor (_wPos#0));
+			_numOfxStr = count _xStr;
+			_xPos = floor (parseNumber ((_xStr select [0,_numOfxStr - 3]) + "500"));
+			_yStr = str (floor (_wPos#1));
+			_numOfyStr = count _yStr;
+			_yPos = floor (parseNumber ((_yStr select [0,_numOfyStr - 3]) + "500"));
+
+			_neighbrPos = [[_xPos,_yPos+1000],[_xPos+1000,_yPos+1000],[_xPos+1000,_yPos],[_xPos+1000,_yPos-1000],[_xPos,_yPos-1000],[_xPos-1000,_yPos-1000],[_xPos-1000,_yPos],[_xPos-1000,_yPos+1000]];
+			_numNeighbrPos = count _neighbrPos;
+
+			_avlblFrontPos = [];
+			for [{_i = 0}, {_i < _numNeighbrPos}, {_i = _i + 1}] do 
+			{
+				_curNeighbrPos =  _neighbrPos#_i;
+				for [{_j = 0}, {_j < _numFrontPos}, {_j = _j + 1}] do 
+				{
+					_curFrontPos = _frontPositions#_i;
+					if (_curNeighbrPos#0 == _curFrontPos#0) then 
+					{
+						if (_curNeighbrPos#1 == _curFrontPos#1) then 
+						{
+							_j = _numFrontPos;
+							_avlblFrontPos pushBack _curFrontPos;
+						}
+					}
+				}
+			};
+			_nextAttackPos = if (count _avlblFrontPos > 0) then 
+			{
+				selectRandom _avlblFrontPos
+			}else{
+				([_frontPositions, [], {_wPos distance _x }, "ASCEND"] call BIS_fnc_sortBy)#0
+			};
+
+			{deleteWaypoint _x} forEachReversed waypoints _group;
+			for "_i" from 0 to 1 do  
+			{ 
+				_wp = _group addWaypoint [_nextAttackPos, 500]; 
+				_wp setWaypointType "SAD"; 
+			}; 
+			[_group, 0] setWaypointPosition [_nextAttackPos, 500]; 
+			_wp = _group addWaypoint [_nextAttackPos, 0]; 
+			_wp setWaypointType "CYCLE";	
+		}
+	} forEach _fireteams;
+	//////////////////// MOVEMENT FOR SQUADS ////////////////////
+	{	
+		_currentGroup = _x#0;
+		_curWp = currentWaypoint _currentGroup;
+		_wPos = waypointPosition [_currentGroup, _curWp];
+
+		_bool = true;
+		for [{_i = 0}, {_i < _numFrontPos}, {_i = _i + 1}] do 
+		{
+			if ((_wPos distance2D _frontPositions#_i) < 500) then
+			{_bool = false}
+		};
+
+
+		if (_bool) then 
+		{
+			_xStr = str (floor (_wPos#0));
+			_numOfxStr = count _xStr;
+			_xPos = floor (parseNumber ((_xStr select [0,_numOfxStr - 3]) + "500"));
+			_yStr = str (floor (_wPos#1));
+			_numOfyStr = count _yStr;
+			_yPos = floor (parseNumber ((_yStr select [0,_numOfyStr - 3]) + "500"));
+
+			_neighbrPos = [[_xPos,_yPos+1000],[_xPos+1000,_yPos+1000],[_xPos+1000,_yPos],[_xPos+1000,_yPos-1000],[_xPos,_yPos-1000],[_xPos-1000,_yPos-1000],[_xPos-1000,_yPos],[_xPos-1000,_yPos+1000]];
+			_numNeighbrPos = count _neighbrPos;
+
+			_avlblFrontPos = [];
+			for [{_i = 0}, {_i < _numNeighbrPos}, {_i = _i + 1}] do 
+			{
+				_curNeighbrPos =  _neighbrPos#_i;
+				for [{_j = 0}, {_j < _numFrontPos}, {_j = _j + 1}] do 
+				{
+					_curFrontPos = _frontPositions#_i;
+					if (_curNeighbrPos#0 == _curFrontPos#0) then 
+					{
+						if (_curNeighbrPos#1 == _curFrontPos#1) then 
+						{
+							_j = _numFrontPos;
+							_avlblFrontPos pushBack _curFrontPos;
+						}
+					}
+				}
+			};
+			_nextAttackPos = if (count _avlblFrontPos > 0) then 
+			{
+				selectRandom _avlblFrontPos
+			}else{
+				([_frontPositions, [], {_wPos distance _x }, "ASCEND"] call BIS_fnc_sortBy)#0
+			};
+
+			{
+				_currentGroup = _x;
+				{deleteWaypoint _x} forEachReversed waypoints _currentGroup;
+				for "_i" from 0 to 1 do  
+				{ 
+					_wp = _currentGroup addWaypoint [_nextAttackPos, 500]; 
+					_wp setWaypointType "SAD"; 
+				}; 
+				[_currentGroup, 0] setWaypointPosition [_nextAttackPos, 500]; 
+				_wp = _currentGroup addWaypoint [_nextAttackPos, 0]; 
+				_wp setWaypointType "CYCLE";	
+			} forEach _x;
+		}
+	} forEach _squads;
+
+	//////////////////// MOVEMENT FOR PLATOONS ////////////////////
+	{	
+		_currentGroup = _x#0;
+		_curWp = currentWaypoint _currentGroup;
+		_wPos = waypointPosition [_currentGroup, _curWp];
+
+		_bool = true;
+		for [{_i = 0}, {_i < _numFrontPos}, {_i = _i + 1}] do 
+		{
+			if ((_wPos distance2D _frontPositions#_i) < 500) then
+			{_bool = false}
+		};
+
+
+		if (_bool) then 
+		{
+			_xStr = str (floor (_wPos#0));
+			_numOfxStr = count _xStr;
+			_xPos = floor (parseNumber ((_xStr select [0,_numOfxStr - 3]) + "500"));
+			_yStr = str (floor (_wPos#1));
+			_numOfyStr = count _yStr;
+			_yPos = floor (parseNumber ((_yStr select [0,_numOfyStr - 3]) + "500"));
+
+			_neighbrPos = [[_xPos,_yPos+1000],[_xPos+1000,_yPos+1000],[_xPos+1000,_yPos],[_xPos+1000,_yPos-1000],[_xPos,_yPos-1000],[_xPos-1000,_yPos-1000],[_xPos-1000,_yPos],[_xPos-1000,_yPos+1000]];
+			_numNeighbrPos = count _neighbrPos;
+
+			_avlblFrontPos = [];
+			for [{_i = 0}, {_i < _numNeighbrPos}, {_i = _i + 1}] do 
+			{
+				_curNeighbrPos =  _neighbrPos#_i;
+				for [{_j = 0}, {_j < _numFrontPos}, {_j = _j + 1}] do 
+				{
+					_curFrontPos = _frontPositions#_i;
+					if (_curNeighbrPos#0 == _curFrontPos#0) then 
+					{
+						if (_curNeighbrPos#1 == _curFrontPos#1) then 
+						{
+							_j = _numFrontPos;
+							_avlblFrontPos pushBack _curFrontPos;
+						}
+					}
+				}
+			};
+			_nextAttackPos = if (count _avlblFrontPos > 0) then 
+			{
+				selectRandom _avlblFrontPos
+			}else{
+				([_frontPositions, [], {_wPos distance _x }, "ASCEND"] call BIS_fnc_sortBy)#0
+			};
+
+			{
+				_currentGroup = _x;
+				{deleteWaypoint _x} forEachReversed waypoints _currentGroup;
+				for "_i" from 0 to 1 do  
+				{ 
+					_wp = _currentGroup addWaypoint [_nextAttackPos, 500]; 
+					_wp setWaypointType "SAD"; 
+				}; 
+				[_currentGroup, 0] setWaypointPosition [_nextAttackPos, 500]; 
+				_wp = _currentGroup addWaypoint [_nextAttackPos, 0]; 
+				_wp setWaypointType "CYCLE";	
+			} forEach _x;
+		}
+	} forEach _platoons;
