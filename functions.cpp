@@ -32,18 +32,28 @@ class FWCore
 
 class FW
 {
-	class Functions 
-	{
-		file = "functions\newFunctions";
-		class pointSideOnScreen {};
-		class saveGame {};
-		class createGroups {};
-		class findSpawnPos {};
-		class spawnUnit {};
-		class orderExecution {};
-		class operateGroups {};
-		class findPos {};
-		class createMarker {};
-		class drawMapArrow {};
-	};
+    tag = "FW"; // необов'язково, якщо назва класу вже FW, але гарна практика
+
+    class Functions
+    {
+        file = "functions\newFunctions";
+        class createGroups {};
+        class createMarker {};
+        class drawMapArrow {};
+        class findPos {};
+        class findSpawnPos {};
+        class operateGroups {};
+        class orderExecution {};
+        class pointSideOnScreen {};
+        class saveGame {};
+        class spawnUnit {};
+    };
+
+    class Positioning
+    {
+        file = "functions\newFunctions\positioning";
+        class getCirclePositions {};
+		class getClosestSquarePos {};
+		class getClosestFriendlyPos {};
+    };
 };

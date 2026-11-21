@@ -11,6 +11,6 @@ _endPosY = floor (parseNumber ((_yStr select [0,_numOfyStr - 3]) + "500"));
 _searchedPos = [_endPosX,_endPosY];
 _searchedPos
 
-
-
 //[floor(_xPos/1000)*1000 + 500, floor(_yPos/1000)*1000 + 500]
+
+

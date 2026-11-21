@@ -8,8 +8,7 @@ params [
 _numOfCircle = floor _numOfCircle;
 if (_numOfCircle < 1) exitWith { [[_centerPos # 0, _centerPos # 1]] };
 
-private _centerX = _centerPos # 0;
-private _centerY = _centerPos # 1;
+_centerPos params ["_centerX","_centerY"];
 private _startCircle = if (_includeInnerCircles) then { 1 } else { _numOfCircle };
 private _positions = [];
 

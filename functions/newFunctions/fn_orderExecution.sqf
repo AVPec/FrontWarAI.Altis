@@ -15,18 +15,15 @@ switch (_order) do {
 		_wp setWaypointType "CYCLE";
 	};
 	case "retreat": {
-		_friendlyPos = (if (_side == independent) then {"GreenPos"} else {"RedPos"});
-		_friendlyPos = missionNamespace getVariable _friendlyPos;
-		_sortedByDistFrindlyPos = [_friendlyPos, [], {_orderPos distance2D _x}, "ASCEND"] call BIS_fnc_sortBy;
-		_retreatPos = _sortedByDistFrindlyPos # (round(random 3));
+		_retreatPos = [_group, _side] call FW_fnc_getClosestFriendlyPos;
 		_wp = _group addWaypoint [_retreatPos, 500]; 
 		_wp setWaypointType "MOVE";
 	};
 	case "defend": {};
 	case "regroup": {};
 	case "findEmptyVehicle": {};
-};
+}; 
 
 
 
- 
+//[player,independent] call FW_fnc_getClosestFriendlyPos
