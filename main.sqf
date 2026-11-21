@@ -1,21 +1,6 @@
 _debug = true;
 _newGame = false;
 
-_closestPos = 
-{
-params ["_xPos","_yPos"];
-
-	_xStr = str (floor _xPos);
-	_numOfxStr = count _xStr;
-	_endPosX = floor (parseNumber ((_xStr select [0,_numOfxStr - 3]) + "500"));
-
-	_yStr = str (floor _yPos);
-	_numOfyStr = count _yStr;
-	_endPosY = floor (parseNumber ((_yStr select [0,_numOfyStr - 3]) + "500"));
-
-	[_endPosX,_endPosY]
-};
-
 _createMkrPoint = 
 {
 params ["_pos","_mkrColor","_text"];
@@ -98,7 +83,7 @@ if (_debug) then {
 
 _spawnNewFrontLine = {
 	params ["_initPos"];
-	_posFirstGreen = _initPos call _closestPos;
+	_posFirstGreen = ["findClosestSquarePos", _initPos] call FW_fnc_findPos;
 	_greenPositions pushBack _posFirstGreen;
 	_posFirstGreen params ["_xPosGreen","_yPosGreen"];
 
@@ -111,7 +96,7 @@ _spawnNewFrontLine = {
 			{
 				if (_landPosY == _yPos) then 
 				{
-					_frontPositions pushBack [_xPos,_yPos,0];
+					_frontPositions pushBack [_xPos,_yPos];
 					_i = _numLandArrPos;
 				};
 			};
@@ -149,7 +134,7 @@ for [{_i = 0}, {_i < _numLandArrPos}, {_i = _i + 1}] do
 			}		
 		}
 	};
-	if (_bool) then {_redPositions pushBack [_landPosX,_landPosY,0]};
+	if (_bool) then {_redPositions pushBack [_landPosX,_landPosY]};
 };
 
 
@@ -199,7 +184,7 @@ while {true} do
 								};
 								if (_bool) then 
 								{
-									_frontPositions pushBack [_xPos,_yPos,0];
+									_frontPositions pushBack [_xPos,_yPos];
 									_numRedPos = count _redPositions;
 									for [{_l = 0}, {_l < _numRedPos}, {_l = _l + 1}] do
 									{
@@ -254,7 +239,7 @@ while {true} do
 									};
 									if (_bool) then 
 									{
-										_frontPositions pushBack [_xPos,_yPos,0];
+										_frontPositions pushBack [_xPos,_yPos];
 										_numGreenPos = count _greenPositions;
 										for [{_l = 0}, {_l < _numGreenPos}, {_l = _l + 1}] do
 										{

@@ -1,7 +1,6 @@
 params ["_group","_order","_orderPos","_side"];
 { deleteWaypoint _x } forEachReversed waypoints _group;
 
-_friendlyPos = (if (_side == independent) then {"GreenPos"} else {"RedPos"});
 //systemChat str _orderPos;
 //systemChat str (missionNamespace getVariable _friendlyPos);
 
@@ -27,3 +26,7 @@ switch (_order) do {
 	case "regroup": {};
 	case "findEmptyVehicle": {};
 };
+
+
+
+ 
