@@ -53,7 +53,14 @@ class FW
     {
         file = "functions\newFunctions\positioning";
         class getCirclePositions {};
-		class getClosestSquarePos {};
 		class getClosestFriendlyPos {};
     };
+
+    class drawMapFrontLine
+    {
+        file = "functions\mapLine";
+		class sortLinePath {};
+		class drawLine {};
+		class drawLineTEST {};	
+    };	
 };

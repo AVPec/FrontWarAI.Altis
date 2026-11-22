@@ -40,5 +40,5 @@ if (_searchedPos isEqualTo []) then {
     _sortedByDistFrindlyPos = [_friendlyPositions, [], {_currentPos distance2D _x}, "ASCEND"] call BIS_fnc_sortBy;
     _searchedPos = _sortedByDistFrindlyPos # (round(random 3));
 };
-copyToClipboard str _searchedPos;
+
 _searchedPos

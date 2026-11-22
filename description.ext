@@ -21,7 +21,5 @@ class Params
 
 class CfgFunctions
 {
-	//mkrRectangle//
-	#include "mapLine\functions.cpp"
 	#include "functions.cpp"
 };

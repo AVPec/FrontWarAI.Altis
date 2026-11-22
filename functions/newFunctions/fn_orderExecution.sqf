@@ -23,7 +23,3 @@ switch (_order) do {
 	case "regroup": {};
 	case "findEmptyVehicle": {};
 }; 
-
-
-
-//[player,independent] call FW_fnc_getClosestFriendlyPos
