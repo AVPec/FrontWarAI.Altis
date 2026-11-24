@@ -1,7 +1,7 @@
 params ["_createdGroups", "_attackPos"];
 private ["_attackPos"];
 
-_debug = true;
+_debug = false;
 
 _side = side (_createdGroups # 0);
 _calculateNumOfUnitsInGroups = {

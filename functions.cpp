@@ -62,5 +62,10 @@ class FW
 		class sortLinePath {};
 		class drawLine {};
 		class drawLineTEST {};	
+		class drawClosedLine {};
+		class getDotSquarePositions {};
+		class moveLine {};
+		class createAndDeformCurvedLine {};
+		class updateFrontLines {};
     };	
 };

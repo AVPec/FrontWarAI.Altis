@@ -1,5 +1,5 @@
 _debug = true;
-_newGame = false;
+_newGame = true;
 
 _createMkrPoint = 
 {
@@ -67,7 +67,7 @@ if (_debug) then {
 			_mkrSquare setMarkerShape "RECTANGLE";
 			_mkrSquare setMarkerSize [500, 500];
 			_mkrSquare setMarkerColor "colorGUER";
-			_mkrSquare setmarkerAlpha 0.5;
+			_mkrSquare setmarkerAlpha 0.3;
 
 			_mkrDot = createMarker [str (random 10000),_squarePos];
 			_mkrDot setMarkerTypeLocal "mil_dot";
@@ -141,6 +141,9 @@ for [{_i = 0}, {_i < _numLandArrPos}, {_i = _i + 1}] do
 //["Initialize", [player, [], true]] call BIS_fnc_EGSpectator;
 openMap true;
 
+// Прапорець змін фронту: true при старті для початкового малювання ліній, далі лише при захопленні квадратів
+_frontChanged = true;
+
 while {true} do
 {
 	for [{_i = 0}, {_i < (count _frontPositions)}, {_i = _i + 1}] do 
@@ -152,6 +155,7 @@ while {true} do
 			_friendlyUnits = {side _x == resistance} count _allUnts;
 			if ((_friendlyUnits*100/count _allUnts) > 80) then // more than 80% of all units must be friendly
 			{
+				_frontChanged = true;
 				_greenPositions pushBack _selectedFrontPos;
 				_frontPositions deleteAt _i;
 
@@ -207,6 +211,7 @@ while {true} do
 				_enemyUnits = {side _x == east} count _allUnts;
 				if ((_enemyUnits*100/count _allUnts) > 80) then // if there are more enemies 
 				{
+					_frontChanged = true;
 					_redPositions pushBack _selectedFrontPos;
 					_frontPositions deleteAt _i;
 
@@ -263,198 +268,15 @@ while {true} do
 		}
 	};
 
-
-
-
-
-
-
-/*
-	//TRYING TO CREATE A CURVED LINE
-
-	{
-		for [{_i = 0}, {_i < (count _frontPositions)}, {_i = _i + 1}] do 
-		{
-			
-		}
-	} forEach -_frontPositions;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-	//TRYING TO CREATE A CURVED LINE
-
-	_arrSortedPath = [];
-	_arrGreenMkrsPos = _greenPositions apply {markerPos _x};
-	_countGreenMkrsPos = count _arrGreenMkrsPos;
-	_checkDistToGreenMkr = 
-	{
-		_slctdPos = _this;
-		_bool = false;
-		for [{_l = 0}, {_l < _countGreenMkrsPos}, {_l = _l + 1}] do 
-		{
-			if ((_slctdPos distance2D (_arrGreenMkrsPos select _l)) < 1100) exitWith {_bool = true};
-		};
-		_bool
-	};
-
-	_arrFrontPosForLine1 = [];
-	{
-		(markerPos _x) params["_xPos","_yPos"];
-		{_arrFrontPosForLine1 pushBack _x} forEach [[_xPos - 250, _yPos + 250],[_xPos + 250,_yPos + 250],[_xPos + 250,_yPos - 250],[_xPos - 250,_yPos - 250]];
-	} forEach _frontPositions;
-	_arrFrontPosForLine2 = [];
-	{
-		_slctdPos = _x;
-		if (_slctdPos call _checkDistToGreenMkr) then {_arrFrontPosForLine2 pushBack _slctdPos};
-	} forEach _arrFrontPosForLine1;
-
-	call FW_fnc_sortLinePath;
-	_arrSortedPath apply {_x pushBack 0};
-	_arrSortedPath pushBack _arrSortedPath#0;
-	_selectedFrontPos = [_arrSortedPath,"colorRed"] call FW_fnc_drawLine;
-	//copyToClipboard str _arrSortedPath; //debug
-
-/*
-	{ 
-		_mkrPointDebug = [_x,"colorGUER",str _forEachIndex] call _createMkrPoint; //debug
-	} forEach _arrSortedPath; //debug
-
-
-/*
-	_firstPos = _arrFrontPosForLine2 select 0; _arrFrontPosForLine2 deleteAt 0;
-	[_firstPos,"colorYellow","pezda1"] call _createMkrPoint;
-
-	_secondPos = [];
-	_countFrontPosForLine2 = count _arrFrontPosForLine2;
-	for [{_i = 0}, {_i < _countFrontPosForLine2}, {_i = _i + 1}] do 
-	{
-		_slctdPos = _arrFrontPosForLine2 select _i;
-		if ((_slctdPos distance2D _firstPos) < 600) exitWith {_secondPos = _slctdPos; _arrFrontPosForLine2 deleteAt _i};
-	};
-	[_secondPos,"colorYellow","pezda2"] call _createMkrPoint;
-
-	_thirPos = [];
-	_intrmedPos = _secondPos vectorAdd (_secondPos vectorDiff _firstPos);
-	_countFrontPosForLine2 = count _arrFrontPosForLine2;
-	for [{_i = 0}, {_i < _countFrontPosForLine2}, {_i = _i + 1}] do 
-	{
-		_slctdPos = _arrFrontPosForLine2 select _i;
-		if ((_slctdPos distance2D _intrmedPos) < 100) exitWith {_thirPos = _slctdPos; _arrFrontPosForLine2 deleteAt _i};
-	};
-	[_thirPos,"colorYellow","pezda3"] call _createMkrPoint;
-
-	copyToClipboard format ["%1,%2",_thirPos,_intrmedPos];
-*/
-
-
-/*
-	_countMkrFront = count _frontPositions;
-	_mkrPos = markerPos ((_frontPositions select {_slctdMkr = markerPos _x; ({(_slctdMkr distance2D (markerPos _x)) < 1100} count _frontPositions ) > 2}) select 0); //find a suitable first marker UNNECESSARY ACTION
-	_arrFrontLine = []; _selectedFrontPos = "";
-
-	for [{_i = 0}, {_i < _countMkrFront}, {_i = _i + 1}] do 
-	{
-		_arrSortedFrontMkrs = [_frontPositions, [], {_mkrPos distance2D (markerPos _x)}, "ASCEND"] call BIS_fnc_sortBy;
-		for [{_j = 0}, {_j < _countMkrFront}, {_j = _j + 1}] do 
-		{
-			_mkrPos = markerPos (_arrSortedFrontMkrs select _j);
-			if (({(_mkrPos distance2D (markerPos _x)) < 100} count _arrFrontLine) < 1) exitWith 
-			{
-				_selectedFrontPos = [_mkrPos,"colorYellow",str _i] call _createMkrPoint;
-				_arrFrontLine pushBack _selectedFrontPos;
-			};
-		};
-	};
-
-
-
-
-	//TRYING TO CREATE A CURVED LINE
-
-	_arrFrontLine pushBack (_arrFrontLine select 0);
-	_arrFrLinePos = [];
-	_arrDebugMkr = []; //debug
-	_mkrStart = markerPos (_arrFrontLine select 0);
-	_nearestGreenMkr = ([_greenPositions, [], {_mkrStart distance2D (markerPos _x)}, "ASCEND"] call BIS_fnc_sortBy) select 0;
-	_mkrStart params ["_xPos","_yPos"];
-	_arrPosFrontMarker = [[_xPos - 250, _yPos + 250],[_xPos + 250,_yPos + 250],[_xPos + 250,_yPos - 250],[_xPos - 250,_yPos - 250]];
-
-	_startPos = ([_arrPosFrontMarker, [], {markerPos _nearestGreenMkr distance2D _x}, "ASCEND"] call BIS_fnc_sortBy) select 0;
-	_debugMkr = [_startPos,"colorBlue","FrP" + str (random 100)] call _createMkrPoint; //debug
-	_arrFrLinePos pushBack _startPos;
-	_arrDebugMkr pushBack _debugMkr; //debug
-
-	for [{_i = 1}, {_i < count _arrFrontLine}, {_i  = _i + 1}] do 
-	{
-		_mkrStart params ["_xPos","_yPos"];
-		_arrPosFrontMarker = [[_xPos - 250, _yPos + 250],[_xPos + 250,_yPos + 250],[_xPos + 250,_yPos - 250],[_xPos - 250,_yPos - 250]];	
-		_mkrSecond = markerPos (_arrFrontLine select _i);
-		if ((_startPos distance2D _mkrSecond) > 800) then 
-		{
-
-			for [{_j = 0}, {_j < (count  _arrPosFrontMarker)}, {_j = _j + 1}] do 
-			{
-				_slctdPos = _arrPosFrontMarker select _j;
-				if 
-				(
-					!(_slctdPos isEqualTo _startPos) &&
-					((_slctdPos distance2D _startPos) < 600) &&
-					((_slctdPos distance2D _mkrSecond) < 800)		
-				) exitWith 
-				{
-					_startPos = _slctdPos;
-					_arrFrLinePos pushBack _startPos;
-					_debugMkr = [_startPos,"colorBlue","FrP" + str (random 100)] call _createMkrPoint;
-					_arrDebugMkr pushBack _debugMkr; //debug
-				};
-			};
-			
-		};
-
-		_mkrSecond params ["_xPos","_yPos"];
-		_arrPosFrontMarker = [[_xPos - 250, _yPos + 250],[_xPos + 250,_yPos + 250],[_xPos + 250,_yPos - 250],[_xPos - 250,_yPos - 250]];
-		_secondPos = ([_arrPosFrontMarker, [], {_startPos distance2D _x}, "ASCEND"] call BIS_fnc_sortBy) select 0;
-
-		if (_i == ( count _arrFrontLine - 1)) then 
-		{		
-			if (({_secondPos isEqualTo _x} count _arrFrLinePos) < 1) then 
-			{
-				_arrFrLinePos pushBack _secondPos;
-				_debugMkr = [_secondPos,"colorBlue","FrPS" + str (random 100)] call _createMkrPoint; //debug
-				_arrDebugMkr pushBack _debugMkr; //debug
-			}
-		}else{
-			_arrFrLinePos pushBack _secondPos;
-			_debugMkr = [_secondPos,"colorBlue","FrPS" + str (random 100)] call _createMkrPoint; //debug
-			_arrDebugMkr pushBack _debugMkr; //debug
-		};
-
-		_startPos = _secondPos; _mkrStart = _mkrSecond;
-		sleep 0.5;
-	};
-*/
-
 	missionNamespace setVariable ["FrontPos", _frontPositions];
 	missionNamespace setVariable ["GreenPos", _greenPositions];
 	missionNamespace setVariable ["RedPos", _redPositions];
+
+	// Оновлюємо плавні лінії фронту лише коли хоча б один квадрат реально змінив сторону
+	if (_frontChanged) then {
+		[_frontPositions, _greenPositions, _redPositions] call FW_fnc_updateFrontLines;
+		_frontChanged = false;
+	};
 
 	if (_debug) then {
 		_createMkrRectangle = 
@@ -478,13 +300,6 @@ while {true} do
 		sleep 20;
 		_allRectangleMkrs spawn {{deleteMarker _x} foreach _this}
 	};
-
-/*
-	_unitPoints = (east countSide allunits) * 5;
-	typeof ((assignedVehicles grp1)#0) groups east
-	_vehArray = [];
-	{_vehArray append  _x} forEach (groups east);
-*/
 	[_frontPositions,_greenPositions] call FW_fnc_saveGame;
 
 	sleep 0;
